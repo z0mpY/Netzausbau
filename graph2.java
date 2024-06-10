@@ -1,4 +1,3 @@
-
 class Graph {
     private final int[][] adjacencyMatrix;
     private final int vertices;
@@ -7,6 +6,17 @@ class Graph {
     public Graph(int vertices) {
         this.vertices = vertices;
         adjacencyMatrix = new int[vertices][vertices];
+
+        // Initialize adjacencyMatrix with INF except the diagonal
+        for (int i = 0; i < vertices; i++) {
+            for (int j = 0; j < vertices; j++) {
+                if (i == j) {
+                    adjacencyMatrix[i][j] = 0;
+                } else {
+                    adjacencyMatrix[i][j] = INF;
+                }
+            }
+        }
     }
 
     public void addEdge(int source, int destination, int weight) {
@@ -14,33 +24,56 @@ class Graph {
         adjacencyMatrix[destination][source] = weight;
     }
 
-    void floydWarshall(int adjacencyMatrix[][]) {
+    void floydWarshall() {
         int matrix[][] = new int[vertices][vertices];
+        int steps[][] = new int[vertices][vertices];
         int i, j, k;
 
-        for (i = 0; i < vertices; i++)
-            for (j = 0; j < vertices; j++)
+        for (i = 0; i < vertices; i++) {
+            for (j = 0; j < vertices; j++) {
                 matrix[i][j] = adjacencyMatrix[i][j];
+                if (i != j && matrix[i][j] != INF) {
+                    steps[i][j] = 1;
+                } else {
+                    steps[i][j] = 0;
+                }
+            }
+        }
 
         // Adding vertices individually
         for (k = 0; k < vertices; k++) {
             for (i = 0; i < vertices; i++) {
                 for (j = 0; j < vertices; j++) {
-                    if (matrix[i][k] + matrix[k][j] < matrix[i][j])
+                    if (matrix[i][k] + matrix[k][j] < matrix[i][j]) {
                         matrix[i][j] = matrix[i][k] + matrix[k][j];
+                        steps[i][j] = steps[i][k] + steps[k][j] + 1;
+                    }
                 }
             }
         }
-        printMatrix(matrix);
+        printMatrix(matrix, "Distance Matrix");
+        printMatrix(steps, "Steps Matrix");
     }
 
-    void printMatrix(int matrix[][]) {
+    void printMatrix(int matrix[][], String matrixName) {
+        System.out.println(matrixName + ":");
+
+        // Print column headers
+        System.out.print("      ");
+        for (int i = 0; i < vertices; i++) {
+            System.out.printf("%5d", i);
+        }
+        System.out.println();
+
         for (int i = 0; i < vertices; ++i) {
+            // Print row header
+            System.out.printf("%5d ", i);
+
             for (int j = 0; j < vertices; ++j) {
                 if (matrix[i][j] == INF)
-                    System.out.print("INF ");
+                    System.out.print(" INF ");
                 else
-                    System.out.print(matrix[i][j] + "  ");
+                    System.out.printf("%5d", matrix[i][j]);
             }
             System.out.println();
         }
@@ -49,15 +82,15 @@ class Graph {
     void printGraph() {
         for (int row = 0; row < adjacencyMatrix.length; row++) {
             for (int col = 0; col < adjacencyMatrix[row].length; col++) {
-                System.out.printf("%4d", adjacencyMatrix[row][col]);
+                System.out.printf("%5d", adjacencyMatrix[row][col]);
             }
             System.out.println();
         }
-        System.out.println(adjacencyMatrix[36][36]);
+
         for (int i = 0; i < vertices; i++) {
             String msg = "";
             for (int j = 0; j < vertices; j++) {
-                if (adjacencyMatrix[i][j] != 0) {
+                if (adjacencyMatrix[i][j] != 0 && adjacencyMatrix[i][j] != INF) {
                     if (!msg.isEmpty()) {
                         msg += ", ";
                     }
@@ -68,20 +101,10 @@ class Graph {
         }
 
     }
-}
 
-public class graph2 {
     public static void main(String[] args) {
         Graph g = new Graph(37);
 
-        for (int a = 0; a < 37; a++) {
-            for (int b = 0; b < 37; b++) {
-                g.addEdge(a, b, 999);
-            }
-        }
-        for (int a = 0; a < 37; a++) {
-            g.addEdge(a, a, 0);
-        }
         g.addEdge(0, 1, 149);
         g.addEdge(0, 2, 146);
         g.addEdge(0, 3, 145);
@@ -131,6 +154,6 @@ public class graph2 {
         g.addEdge(35, 36, 101);
 
         g.printGraph();
-
+        g.floydWarshall();
     }
 }
