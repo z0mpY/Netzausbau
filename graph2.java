@@ -46,7 +46,7 @@ class Graph {
                 for (j = 0; j < vertices; j++) {
                     if (matrix[i][k] + matrix[k][j] < matrix[i][j]) {
                         matrix[i][j] = matrix[i][k] + matrix[k][j];
-                        steps[i][j] = steps[i][k] + steps[k][j] + 1;
+                        steps[i][j] = steps[i][k] + steps[k][j];
                     }
                 }
             }
